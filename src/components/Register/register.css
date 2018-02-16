@@ -1,0 +1,11 @@
+.register_page{
+    
+    text-align: center;
+    color: white;
+    font-size: 20px;
+    margin: auto;
+    padding: 80px 30px;
+    width: 80vh;
+    height: fit-content;
+    background-color: rgba(0,0,0,.4);
+}
