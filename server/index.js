@@ -6,6 +6,8 @@ const session = require('express-session');
 const passport = require('passport');
 const Auth0Strategy = require('passport-auth0');
 const massive = require('massive');
+const stripe = require('stripe')(process.env.STRIPE_PRIVATE_KEY);
+
 
 const  {
     SERVER_PORT,
@@ -83,7 +85,7 @@ app.get('/checkuser', (req, res) => {
    })
 
 app.get('/getId', (req, res) =>{
-    res.status(200).send({account_id : req.user.account_id})
+    res.status(200).send({account_id : req.user.account_id, summoner_name: req.user.summoner_name})
 })
 
 app.get('/auth/me', (req, res) => {
@@ -119,11 +121,41 @@ app.post('/addfriend', (req, res)=>{
     })
 })
 
+app.put('/updatefriend', (req, res)=>{
+    const db = app.get('db');
+    db.update_friend([req.body.accountId, req.body.kills, req.body.assists, req.body.deaths]).then(response =>{
+        res.status(200).send(console.log('user updated!'))
+    })
+})
+
+app.delete('/remove/:id', (req, res)=>{
+    const db = app.get('db');
+    console.log('remove friend', req.params.id)
+    db.remove_friend([req.params.id]).then(response =>{
+        res.status(200).send(console.log('friend removed'))
+    })
+})
+
 app.get('/getfriends', (req, res)=>{
     const db = app.get('db');
     db.load_friends([req.user.id]).then(response=>{
         res.status(200).send(response)
     })
+})
+
+app.post('/donate', (req, res)=>{
+    const amount = req.body.amount; 
+    const charge = stripe.charges.create({
+        amount: amount,
+        currency: 'usd', 
+        source: req.body.token.id,
+        description: "Donation Amount"
+    },
+    function(err, charge){
+        if(err) return res.sendStatus(500);
+        else return res.sendStatus(200);
+    }
+)
 })
 
 app.listen(SERVER_PORT, ()=> console.log(`The server is under attack at port ${SERVER_PORT}`))

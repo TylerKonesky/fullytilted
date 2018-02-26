@@ -4,8 +4,20 @@
     color: white;
     font-size: 20px;
     margin: auto;
-    padding: 80px 30px;
     width: 80vh;
     height: fit-content;
     background-color: rgba(0,0,0,.4);
+}
+
+@media(max-width: 750px){
+    .register_page{
+    font-size: 10px;
+    grid-column: 1/6;
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(1,auto);
+    grid-gap: 5px;
+    text-align: left;
+    padding-left: 80px;
+    }
 }

@@ -66,13 +66,23 @@ export default class Search extends Component {
         return (
             
                 <section className='App'>  
-                    <div className='home_box'>
+                    <div>
+                        <div className="search_page_buttons">
+                            <a href="http://localhost:3000/#/home">
+                                <button> Go Back </button>
+                            </a>
 
-                       <h2> Welcome to the SEARCH PAGE!! </h2>
+                            <a href='http://localhost:3005/logout'> 
+                                <button>LOGOUT </button> 
+                            </a>
+                        </div>    
+                        <div className="search_box">
+                            <h2 > Welcome to the SEARCH PAGE!! </h2>
 
-                        <h3> Find your feeder Friends:<input onChange={(e)=>this.enterUser(e.target.value)}></input> </h3>
-                        <button onClick={this.searchUser}>Search</button>
-                        <h3> Summoner: {this.state.summoner} <div>{this.state.accountId > 0 ? <button onClick={this.addFriend}>Add Friend </button> : <div></div>}</div> </h3>
+                            <h3> Find your feeder Friends:<input onChange={(e)=>this.enterUser(e.target.value)}></input> </h3>
+                            <button onClick={this.searchUser}>Search</button>
+                            <h3> Summoner: {this.state.summoner} <div>{this.state.accountId > 0 ? <button onClick={this.addFriend}>Add Friend </button> : <div></div>}</div> </h3>
+                        </div>
                     </div>
                  </section> 
             

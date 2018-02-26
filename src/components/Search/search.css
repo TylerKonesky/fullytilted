@@ -1,3 +1,26 @@
-.home_box{
-    font-size: 20px;
+.search_box{
+    text-align: center;
+    color: white;
+    font-size: 15px;
+    margin: auto;
+    padding: 80px 30px;
+    width: 80vw;
+    height: fit-content;
+    background-color: rgba(0,0,0,.4);
+}
+.search_page_buttons{
+   
+    display: flex;
+    justify-content: space-between;
+    grid-template-columns: 1fr 1fr;
+    
+}
+
+@media(max-width: 550px){
+    .search_box{
+        grid-template-columns: 1fr;
+    }
+    .search_page_buttons{
+        grid-column: 1;
+    }
 }

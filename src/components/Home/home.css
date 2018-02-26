@@ -5,7 +5,45 @@
     font-size: 15px;
     margin: auto;
     padding: 80px 30px;
-    width: 80vh;
+    width: 80vw;
     height: fit-content;
     background-color: rgba(0,0,0,.4);
+}
+
+.friend_stats{
+    margin-bottom: 5px;
+    padding: 5px;
+    background-color: rgba(0,0,0,.4);
+    display: grid;
+    grid-template-columns: repeat(5,auto);
+    grid-gap: 5px;
+    
+}
+
+.button_span{
+    grid-column: 1/6;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 5px;
+    
+}
+
+.home_header button{
+    font-size: 15px;
+    margin-left: 15px;
+    
+}
+@media (max-width: 750px){
+    .stats_page{
+        padding: 5px;
+    }
+}
+
+@media(max-width: 550px){
+    .friend_stats{
+        grid-template-columns: 1fr;
+    }
+    .button_span{
+        grid-column: 1;
+    }
 }

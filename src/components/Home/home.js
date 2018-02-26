@@ -3,7 +3,7 @@ import './home.css'
 import axios from 'axios';
 import {connect} from 'react-redux';
 import {getUser} from '../../ducks/reducer';
-
+import StripeCheckout from 'react-stripe-checkout';
 
 
 class Home extends Component {
@@ -12,6 +12,8 @@ class Home extends Component {
 
         this.state = {
             
+            amount: 100,
+            summoner_name: '',
             account_id: 0,
             matches: [],
             kills: [],
@@ -37,7 +39,7 @@ componentDidMount(){
 async matches(){
     let matches = [];
     let account = await axios.get('/getId')
-    console.log(account)
+    console.log("check", account)
     let accountId = account.data.account_id;
         axios.get(`https://na1.api.riotgames.com/lol/match/v3/matchlists/by-account/${accountId}?api_key=${process.env.REACT_APP_API_KEY}`).then(response =>{
         console.log('MATCHES', response)    
@@ -45,6 +47,7 @@ async matches(){
                 matches.push(response.data.matches[i].gameId)
             }
                 this.setState({
+                    summoner_name: account.data.summoner_name,
                     account_id : accountId,
                     matches: matches
             }, 
@@ -53,112 +56,138 @@ async matches(){
 }
 
 async friendsStats(id){
-    
+    console.log("friend id",id)
+    let accountId = id;
     let kills = 0;
     let assists = 0;
     let deaths = 0;
-    await axios.get(`https://na1.api.riotgames.com/lol/match/v3/matchlists/by-account/${id}?api_key=${process.env.REACT_APP_API_KEY}`).then(response=>{
+    await axios.get(`https://na1.api.riotgames.com/lol/match/v3/matchlists/by-account/${id}?api_key=${process.env.REACT_APP_API_KEY}`).then( async response=>{
         for(let i = 0; i < 20; i++){
-            console.log("friendly",response.data.matches[15].gameId, kills, assists)
-            axios.get(`https://na1.api.riotgames.com/lol/match/v3/matches/${response.data.matches[i].gameId}?api_key=${process.env.REACT_APP_API_KEY}`).then(response=>{
+           await axios.get(`https://na1.api.riotgames.com/lol/match/v3/matches/${response.data.matches[i].gameId}?api_key=${process.env.REACT_APP_API_KEY}`).then(response=>{
                 for(let j = 0; j < 10; j++){
-                    console.log("my ID's",id)
-                    if(response.data.participantIdentities[j].player.accountId == id){
-                        kills += response.data.participants[j].stats.kills;
-                        assists += response.data.participants[j].stats.assists;
-                        deaths += response.data.participants[j].stats.deaths;
+                    if(response.data.participantIdentities[j].player.accountId == accountId){
+                        kills = kills + response.data.participants[j].stats.kills;
+                        assists = assists + response.data.participants[j].stats.assists;
+                        deaths = deaths + response.data.participants[j].stats.deaths;
                 }} 
         })
-        } this.setState({
-            friendsStats: Object.assign(this.state.friendsStats, {account_id: id, kills: kills, assists : assists, deaths: deaths})
+        }
+        axios.put('/updatefriend', {accountId: id, kills : kills, deaths : deaths, assists : assists}).then(response=>{
+            console.log("user updated")
         })
         
-        
-        
+        //  this.setState({
+        //     friendsStats: Object.assign([], ...this.state.friendsStats, {account_id: id, kills: kills, assists : assists, deaths: deaths})
+        })   
+}
+
+onToken = token => {
+    console.log('token', token);
+    token.card = void 0;
+    const {amount} = this.state
+    axios.post('/donate', {token, amount}).then(charge => {(console.log('charge response', charge.data))})
+}
+
+removeFriend(id){
+    axios.delete(`/remove/` + id).then(response => {
+        axios.get('/getfriends').then(response=>{
+            this.setState({
+                friends : response.data
+            })
+        })
     })
 }
 
-
 userStats(){
-    let kills = [];
-    let deaths = [];
-    let assists = [];
+    let kills = 0;
+    let deaths = 0;
+    let assists = 0;
     let damageTaken = [];
     let damageDealt = [];
     
-    console.log('length',this.state.matches.length)
-    if(this.state.matches.length){
-               
+    if(this.state.matches.length){       
         for(let i = 0; i < 20; i++){
             axios.get(`https://na1.api.riotgames.com/lol/match/v3/matches/${this.state.matches[i]}?api_key=${process.env.REACT_APP_API_KEY}`).then(response =>{
                 let accountId = this.state.account_id;
                 for(let j = 0; j < 10; j++){
                     if(response.data.participantIdentities[j].player.accountId == accountId){
-                        kills.push(response.data.participants[j].stats.kills);
-                        assists.push(response.data.participants[j].stats.assists);
-                        deaths.push(response.data.participants[j].stats.deaths);
-                        damageDealt.push(response.data.participants[j].stats.totalDamageDealtToChampions);
-                        damageTaken.push(response.data.participants[j].stats.totalDamageTaken);
-                        
+                        kills += response.data.participants[j].stats.kills;
+                        assists += response.data.participants[j].stats.assists;
+                        deaths += response.data.participants[j].stats.deaths;
+                        // damageDealt.push(response.data.participants[j].stats.totalDamageDealtToChampions);
+                        // damageTaken.push(response.data.participants[j].stats.totalDamageTaken);   
                     }
                 }
-         
+
+                
                 this.setState({
                     kills: kills,
                     deaths: deaths,
                     assists: assists,
-                    damageDealt : damageDealt,
-                    damageTaken : damageTaken
+                    // damageDealt : damageDealt,
+                    // damageTaken : damageTaken
                 })
-        })            
-    }
-            
+            })            
+        }
     }               
 }
 
-
-
     render() {
         let friends = this.state.friends.map((friend)=>{
-            return( <div key ={friend.id} >
 
-                        <div> {friend.summoner_name} Kills: {this.state.friendsStats[friend.id] ? this.state.friendStats[friend.id-1].kills : 0 }Deaths: Assists: K/D: <button onClick={ () => this.friendsStats(friend.account_id)}>Update Stats</button> <button>Remove Friend</button> </div>
-
+            return( <div className ="friend_stats" key ={friend.id} style={{backgroundColor:  ((friend.kills+friend.assists)/friend.deaths) > ((this.state.kills + this.state.assists)/this.state.deaths) ? '#258039' : '#CF3721' }} >    
+                        <span>{friend.summoner_name}</span> 
+                        <span>Kills: {friend.kills} </span> 
+                        <span>Deaths: {friend.deaths} </span> 
+                        <span>Assists: {friend.assists}</span>
+                        <span>KDA: {(((friend.kills)+(friend.assists))/(friend.deaths)).toFixed(2)} </span> 
+                        <span className="button_span">
+                            <button onClick={ () => this.friendsStats(friend.account_id)}>Update </button> 
+                            <button onClick={ () => this.removeFriend(friend.id)}> Remove</button> 
+                        </span>
                     </div>
-
             )
         })
-
         const {userData} = this.props
-        console.log('final', this.state);
         return (
-        <div>    
-            <div>
+        <div>
+            
+            <div className="home_header">
+
+                <StripeCheckout
+                    token={this.onToken}
+                    stripeKey={process.env.REACT_APP_STRIPE_PUBLIC_KEY}
+                    amount={this.state.amount}/>
+                <a href="javascript:location.reload(true)">
+                <button> Refresh Stats </button>
+                </a>
+               
                 <a href="http://localhost:3000/#/search">
                 <button> Find Friends </button>
                 </a>
+                
+                <a href='http://localhost:3005/logout'> 
+                   <button>LOGOUT</button> 
+                </a>
             </div>
             <div className='stats_page'>
-                { this.state.kills.length ? 
+                { this.state.kills ? 
                 <div>
-                    <h3>Kills {this.state.kills.reduce((a,c)=> a + c)} </h3>
-                    <h3>Assists {this.state.assists.reduce((a,c)=> a + c)} </h3>
-                    <h3>Deaths {this.state.deaths.reduce((a,c)=> a + c)} </h3>
-                    <h3>Total Damage Dealt {this.state.damageDealt.reduce((a,c)=> a + c)} </h3>
+                    <h1> Welcome, {this.state.summoner_name} </h1>
+                    <h3>Kills - {this.state.kills} </h3>
+                    <h3>Assists - {this.state.assists} </h3>
+                    <h3>Deaths  - {this.state.deaths} </h3>
+                    {/* <h3>Total Damage Dealt {this.state.damageDealt.reduce((a,c)=> a + c)} </h3>
                     <h3>Total Damage Taken {this.state.damageTaken.reduce((a,c)=> a + c)} </h3>
                     <h3>Damage Per Kill {(this.state.damageDealt.reduce((a,c)=> a + c))/(this.state.kills.reduce((a,c)=> a + c))} </h3>
-                    <h3>Damage Taken Per Death {(this.state.damageTaken.reduce((a,c)=> a + c))/(this.state.deaths.reduce((a,c)=> a + c))} </h3>
-                    <h3>K/D Ratio {(this.state.kills.reduce((a,c)=> a + c))/(this.state.deaths.reduce((a,c)=> a + c))} </h3>
+                    <h3>Damage Taken Per Death {(this.state.damageTaken.reduce((a,c)=> a + c))/(this.state.deaths.reduce((a,c)=> a + c))} </h3> */}
+                    <h3>KDA Ratio {((this.state.kills+this.state.assists)/this.state.deaths).toFixed(2)} </h3>
                     {friends}
                 </div>
                 :
                 <img src="https://media.giphy.com/media/3o7aDcjrXva7DqzZni/giphy.gif" />
 
-                }
-               
-                <a href='http://localhost:3005/logout'> 
-                   <button>LOGOUT</button> 
-                </a>
+                }   
             </div> 
         </div>    
         )
@@ -166,7 +195,9 @@ userStats(){
 }
 
 function mapStateToProps(state){
+    console.log("test", state)
     return {
+        
         userData: state.user
     }
 }
