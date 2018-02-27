@@ -9,6 +9,15 @@
     height: fit-content;
     background-color: rgba(0,0,0,.4);
 }
+.modal_box{
+    text-align: center;
+    color: white;
+    font-size: 15px;
+    margin: auto;
+    
+    height: fit-content;
+    background-color: rgba(0,0,0,.4);
+}
 
 .friend_stats{
     margin-bottom: 5px;
@@ -33,6 +42,14 @@
     margin-left: 15px;
     
 }
+
+.home_header{
+    grid-column: 1/6;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-gap: 5px;
+}
+
 @media (max-width: 750px){
     .stats_page{
         padding: 5px;
@@ -46,4 +63,41 @@
     .button_span{
         grid-column: 1;
     }
+    .home_header{
+       grid-gap: 0px;
+       margin: 0px;
+       padding: 0px;
+       text-align: center;
+    }
 }
+
+
+
+
+.search_box{
+    text-align: center;
+    color: white;
+    font-size: 15px;
+    margin: auto;
+    padding: 80px 30px;
+    width: 80vw;
+    height: fit-content;
+    background-color: rgba(0,0,0,.4);
+}
+.search_page_buttons{
+   
+    display: flex;
+    justify-content: space-between;
+    grid-template-columns: 1fr 1fr;
+    
+}
+
+@media(max-width: 550px){
+    .search_box{
+        grid-template-columns: 1fr;
+    }
+    .search_page_buttons{
+        grid-column: 1;
+    }
+}
+

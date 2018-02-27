@@ -4,7 +4,10 @@ import axios from 'axios';
 import {connect} from 'react-redux';
 import {getUser} from '../../ducks/reducer';
 import StripeCheckout from 'react-stripe-checkout';
-
+import FlipMove from 'react-flip-move';
+import PopoutWindow from 'react-popout';
+import Modal from 'react-modal';
+import Payment from '../Payment/payment'
 
 class Home extends Component {
     constructor(){
@@ -12,6 +15,7 @@ class Home extends Component {
 
         this.state = {
             
+            modalIsOpen: false,
             amount: 100,
             summoner_name: '',
             account_id: 0,
@@ -23,8 +27,79 @@ class Home extends Component {
             damageDealt: [],
             friends: [],
             friendsStats: [],
+
+            summonerFound: false,
+            summoner: '',
+            name: '',
+            level: 0,
+            accountId: 0,
+            summonerInput: '',
         } 
+
+    this.openModal = this.openModal.bind(this);
+    this.afterOpenModal = this.afterOpenModal.bind(this);
+    this.closeModal = this.closeModal.bind(this);
+
+    this.enterUser= this.enterUser.bind(this);
+    this.searchUser = this.searchUser.bind(this);
+    this.addFriend = this.addFriend.bind(this);
+
     }
+// ** SEARCH MODAL FUNCTIONS
+
+enterUser(value){
+    this.setState({
+        summonerInput : value
+    })
+}
+
+searchUser(){
+
+    axios.get(`https://na1.api.riotgames.com/lol/summoner/v3/summoners/by-name/${this.state.summonerInput}?api_key=${process.env.REACT_APP_API_KEY}`).then(response =>{
+        if(!response){
+            
+            this.setState({
+                 
+            })
+        }else{
+            this.setState({
+                summoner: response.data.name,
+                level: response.data.summonerLevel,
+                accountId: response.data.accountId
+                
+            })      
+                
+        } console.log('test', this.state.accountId);
+    }).catch( (err)=> {
+        console.log(err)
+        this.setState({
+            summoner: "USER NOT FOUND",
+        })
+    })
+}
+
+addFriend(){
+    axios.post('/addfriend', {summoner_name: this.state.summoner, accountId: this.state.accountId}).then(response => {
+        console.log("test" , response)
+            
+        })
+    }
+// ** MODAL Functions
+
+openModal() {
+        this.setState({modalIsOpen: true});
+      }
+    
+afterOpenModal() {
+        // references are now sync'd and can be accessed.
+        this.subtitle.style.color = '#f00';
+      }
+    
+closeModal() {
+        this.setState({modalIsOpen: false});
+      }
+
+      // **MAIN PAGE FUNCTIONS
 
 componentDidMount(){
      axios.get('/getfriends').then(response=>{
@@ -32,8 +107,7 @@ componentDidMount(){
         this.setState({
             friends : response.data
         })
-    }, this.matches())
-    
+    }, this.matches())   
 }
 
 async matches(){
@@ -73,7 +147,10 @@ async friendsStats(id){
         })
         }
         axios.put('/updatefriend', {accountId: id, kills : kills, deaths : deaths, assists : assists}).then(response=>{
-            console.log("user updated")
+            console.log("check friends", response)
+            this.setState({
+                friends : response.data
+            })
         })
         
         //  this.setState({
@@ -81,12 +158,6 @@ async friendsStats(id){
         })   
 }
 
-onToken = token => {
-    console.log('token', token);
-    token.card = void 0;
-    const {amount} = this.state
-    axios.post('/donate', {token, amount}).then(charge => {(console.log('charge response', charge.data))})
-}
 
 removeFriend(id){
     axios.delete(`/remove/` + id).then(response => {
@@ -132,10 +203,19 @@ userStats(){
     }               
 }
 
+    //** STRIPE TOKEN
+onToken = token => {
+    console.log('token', token);
+    token.card = void 0;
+    const {amount} = this.state
+    axios.post('/donate', {token, amount}).then(charge => {(console.log('charge response', charge.data))})
+}
     render() {
         let friends = this.state.friends.map((friend)=>{
 
-            return( <div className ="friend_stats" key ={friend.id} style={{backgroundColor:  ((friend.kills+friend.assists)/friend.deaths) > ((this.state.kills + this.state.assists)/this.state.deaths) ? '#258039' : '#CF3721' }} >    
+            return( 
+                <FlipMove duration={750} easing="ease-out">
+                    <div className ="friend_stats" key ={friend.id} style={{backgroundColor:  ((friend.kills+friend.assists)/friend.deaths) > ((this.state.kills + this.state.assists)/this.state.deaths) ? '#258039' : '#CF3721' }} >    
                         <span>{friend.summoner_name}</span> 
                         <span>Kills: {friend.kills} </span> 
                         <span>Deaths: {friend.deaths} </span> 
@@ -146,32 +226,68 @@ userStats(){
                             <button onClick={ () => this.removeFriend(friend.id)}> Remove</button> 
                         </span>
                     </div>
+                </FlipMove>
             )
         })
         const {userData} = this.props
+        const customStyles = {
+            content : {
+              top                   : 'auto',
+              left                  : 'auto',
+              right                 : 'auto',
+              bottom                : 'auto',
+             
+            }
+          };
         return (
         <div>
-            
             <div className="home_header">
+            <div>
+                    {/* <StripeCheckout
+                        
+                        token={this.onToken}
+                        stripeKey={process.env.REACT_APP_STRIPE_PUBLIC_KEY}
+                        amount={this.state.amount}/> */}
+                        <Payment/>
 
-                <StripeCheckout
-                    token={this.onToken}
-                    stripeKey={process.env.REACT_APP_STRIPE_PUBLIC_KEY}
-                    amount={this.state.amount}/>
-                <a href="javascript:location.reload(true)">
-                <button> Refresh Stats </button>
-                </a>
-               
-                <a href="http://localhost:3000/#/search">
-                <button> Find Friends </button>
-                </a>
+                    <a href="javascript:location.reload(true)">
+                    <button> Refresh Stats </button>
+                    </a>
+
                 
+                    <button onClick={this.openModal}>Find Friends</button>
+                <Modal
+                    className="modal_box"
+                    isOpen={this.state.modalIsOpen}
+                    onAfterOpen={this.afterOpenModal}
+                    onRequestClose={this.closeModal}
+                    style={customStyles}
+                    contentLabel="Friend Search"
+        >   
+
+                    <h2 ref={subtitle => this.subtitle = subtitle}></h2>
+                    <button onClick={this.closeModal}>close</button>
+                    <div className="search_box">
+                        <h3> Find your feeder Friends:<input onChange={(e)=>this.enterUser(e.target.value)}></input> </h3>
+                        <button onClick={this.searchUser}>Search</button>
+                        <h3> Summoner: {this.state.summoner} <div>{this.state.accountId > 0 ? <button onClick={this.addFriend}>Add Friend </button> : <div></div>}</div> </h3>
+                    </div>
+            
+                </Modal>
+                
+            
+
+                {/* <a href="http://localhost:3000/#/search">
+                <button> Find Friends </button>
+                </a> */}
+                    
                 <a href='http://localhost:3005/logout'> 
                    <button>LOGOUT</button> 
                 </a>
+                </div>
             </div>
             <div className='stats_page'>
-                { this.state.kills ? 
+                { this.state.kills > 0 ? 
                 <div>
                     <h1> Welcome, {this.state.summoner_name} </h1>
                     <h3>Kills - {this.state.kills} </h3>
@@ -186,6 +302,10 @@ userStats(){
                 </div>
                 :
                 <img src="https://media.giphy.com/media/3o7aDcjrXva7DqzZni/giphy.gif" />
+
+                
+                    
+                   
 
                 }   
             </div> 

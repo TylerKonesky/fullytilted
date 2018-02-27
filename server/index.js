@@ -123,8 +123,8 @@ app.post('/addfriend', (req, res)=>{
 
 app.put('/updatefriend', (req, res)=>{
     const db = app.get('db');
-    db.update_friend([req.body.accountId, req.body.kills, req.body.assists, req.body.deaths]).then(response =>{
-        res.status(200).send(console.log('user updated!'))
+    db.update_friend([req.body.accountId, req.body.kills, req.body.assists, req.body.deaths, req.user.id]).then(response =>{
+        res.status(200).send(response)
     })
 })
 
