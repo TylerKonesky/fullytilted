@@ -54,6 +54,7 @@ passport.use(new Auth0Strategy({
     const db = app.get('db');
     const { sub } = profile._json;
     db.find_user([sub]).then( response => {
+        console.log(sub)
         if(response[0]){
             done(null, response[0].id)
         }else{
@@ -66,13 +67,16 @@ passport.use(new Auth0Strategy({
 }))
 
 passport.serializeUser( (id, done)=> {
+    
     done(null, id);
 })
 
 passport.deserializeUser( (id, done) =>{
     const db = app.get('db');
+    console.log(id)
     db.find_logged_in_user([id]).then( response => {
         done(null, response[0])
+        
     })
 })
 
@@ -82,6 +86,7 @@ app.get('/auth/callback', passport.authenticate('auth0', {
 }))
 
 app.get('/checkuser', (req, res) => {
+    console.log(req.user.summoner_name)
     if (req.user.summoner_name){
             res.redirect(process.env.LOGIN_HOME)
         }else{
@@ -108,6 +113,7 @@ app.get('/logout', (req,res) => {
 
 app.put('/register', (req, res)=> {
     const db = app.get('db');
+    console.log('\n\nohgfhijhgh\n\n',req.body)
     const {firstName, lastName, summonerName, email, preferredRole, summonerId, accountId, auth_id} = req.body;
     db.update_user([firstName, lastName, summonerName, email, preferredRole, summonerId, accountId, auth_id ])
     .then(response => {

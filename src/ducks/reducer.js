@@ -94,9 +94,10 @@ export function getPreferredRole(preferredRole){
     }
 }
 export function getId(state){
-    console.log('test', state.summonerName)
+    console.log('test', state)
    
-    axios.get(`https://na1.api.riotgames.com/lol/summoner/v3/summoners/by-name/${state.summonerName}?api_key=${process.env.REACT_APP_API_KEY}`).then(response =>{
+    axios.get(`https://na1.api.riotgames.com/lol/summoner/v3/summoners/by-name/${state.summonerName}?api_key=${process.env.REACT_APP_API_KEY}`, {'Access-Control-Allow-Origin': '*',
+    'Content-Type': 'application/json'}).then(response =>{
         console.log('response', response)
         axios.put('/register', Object.assign({}, state, {summonerId : response.data.id}, {accountId: response.data.accountId} ))
         return response.data

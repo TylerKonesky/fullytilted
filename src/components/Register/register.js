@@ -36,6 +36,7 @@ class Register extends Component {
     register(){
         console.log(this.state)
         getId(this.state)
+        
     }
     
     newGetFirst(value){
@@ -74,6 +75,8 @@ class Register extends Component {
     }
 
     render() {
+        console.log("checkers", this.props)
+        console.log("new check", this.state)
         return (
             <div className='register_page'>
                 
@@ -94,6 +97,7 @@ class Register extends Component {
                 </h3>
                 <h3>Summoner Name:   <input onChange={(e)=>this.newGetSummonerName(e.target.value)}></input> </h3>        
                 <a href={process.env.REACT_APP_LOGIN_HOME}> 
+                  
                    <button onClick={this.register}>Register</button> 
                 </a>
             </div> 
