@@ -68,11 +68,11 @@ export default class Search extends Component {
                 <section className='App'>  
                     <div>
                         <div className="search_page_buttons">
-                            <a href="http://localhost:3000/#/home">
+                            <a href={process.env.REACT_APP_LOGIN_HOME}>
                                 <button> Go Back </button>
                             </a>
 
-                            <a href='http://localhost:3005/logout'> 
+                            <a href={process.env.REACT_APP_LOGOUT}> 
                                 <button>LOGOUT </button> 
                             </a>
                         </div>    

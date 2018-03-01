@@ -215,6 +215,7 @@ onToken = token => {
 }
     render() {
         let friends = this.state.friends.map((friend)=>{
+            console.log("testtttt",friend)
 
             return( 
                 <FlipMove duration={750} easing="ease-out">
@@ -284,7 +285,7 @@ onToken = token => {
                 <button> Find Friends </button>
                 </a> */}
                     
-                <a href='http://localhost:3005/logout'> 
+                <a href={process.env.REACT_APP_LOGOUT}> 
                    <button>LOGOUT</button> 
                 </a>
                 </div>

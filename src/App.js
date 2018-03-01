@@ -5,7 +5,7 @@ import Auth from "./components/Auth/auth";
 import Register from './components/Register/register';
 import Home from "./components/Home/home";
 import Search from "./components/Search/search";
-import {StripeProvider} from 'react-stripe-elements';
+
 
 
 class App extends Component {

@@ -22,6 +22,10 @@ const  {
 
 const app = express();
 
+// app.get('*', (req, res)=>{
+//     res.sendFile(path.join(__dirname, '../build/index.html'));
+// });
+
 app.use(cors());
 
 app.use(bodyParser.json());
@@ -73,14 +77,14 @@ passport.deserializeUser( (id, done) =>{
 
 app.get('/auth', passport.authenticate('auth0'));
 app.get('/auth/callback', passport.authenticate('auth0', {
-    successRedirect: 'http://localhost:3005/checkuser'
+    successRedirect: process.env.CHECK_USER
 }))
 
 app.get('/checkuser', (req, res) => {
     if (req.user.summoner_name){
-            res.redirect('http://localhost:3000/#/home')
+            res.redirect(process.env.LOGIN_HOME)
         }else{
-            res.redirect('http://localhost:3000/#/register')
+            res.redirect(process.env.LOGIN_REGISTER)
         }
    })
 
@@ -98,7 +102,7 @@ app.get('/auth/me', (req, res) => {
 
 app.get('/logout', (req,res) => {
     req.logout(); 
-    res.redirect('http://localhost:3000')
+    res.redirect(process.env.LOCAL_HOME)
 })
 
 app.put('/register', (req, res)=> {

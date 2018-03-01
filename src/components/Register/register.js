@@ -93,7 +93,7 @@ class Register extends Component {
                     </select> 
                 </h3>
                 <h3>Summoner Name:   <input onChange={(e)=>this.newGetSummonerName(e.target.value)}></input> </h3>        
-                <a href='http://localhost:3000/#/home'> 
+                <a href={process.env.REACT_APP_LOGIN_HOME}> 
                    <button onClick={this.register}>Register</button> 
                 </a>
             </div> 
