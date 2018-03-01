@@ -80,10 +80,13 @@ searchUser(){
 
 addFriend(){
     axios.post('/addfriend', {summoner_name: this.state.summoner, accountId: this.state.accountId}).then(response => {
-        console.log("test" , response)
-            
+        axios.get('/getfriends').then(response=>{
+            this.setState({
+                friends : response.data
+            })  
         })
-    }
+    })
+}
 // ** MODAL Functions
 
 openModal() {

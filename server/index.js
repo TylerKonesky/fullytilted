@@ -114,7 +114,7 @@ app.post('/addfriend', (req, res)=>{
     console.log(req.body, req.user)
     const db = app.get('db');
     db.add_friend([req.body.summoner_name, req.body.accountId, req.user.id]).then(response => {
-        res.status(200).send(console.log('friend added!'))
+        res.status(200).send(response)
     
     }).catch((err)=>{
         console.log(err)
