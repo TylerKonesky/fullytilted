@@ -5,8 +5,8 @@ last_name varchar(40),
 summoner_name text, 
 email text, 
 preferred_role text, 
-user_summoner_id integer, 
-user_account_id integer, 
+summoner_id integer, 
+account_id integer, 
 auth_id text
 )
 
