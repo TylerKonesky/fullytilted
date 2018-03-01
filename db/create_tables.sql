@@ -2,7 +2,7 @@ create table league_users (
 id serial primary key, 
 first_name varchar(20), 
 last_name varchar(40), 
-user_summoner_name text, 
+summoner_name text, 
 email text, 
 preferred_role text, 
 user_summoner_id integer, 
