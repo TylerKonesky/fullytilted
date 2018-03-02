@@ -34,8 +34,10 @@ class Register extends Component {
     }
 
     register(){
-        console.log(this.state)
-        getId(this.state)
+        console.log("register",this.state);
+        getId(this.state);
+        
+        setTimeout(this.props.history.push('/home'), 1500)
         
     }
     
@@ -96,10 +98,10 @@ class Register extends Component {
                     </select> 
                 </h3>
                 <h3>Summoner Name:   <input onChange={(e)=>this.newGetSummonerName(e.target.value)}></input> </h3>        
-                <a href={process.env.REACT_APP_LOGIN_HOME}> 
+                {/* <a href={process.env.REACT_APP_LOGIN_HOME}>  */}
                   
                    <button onClick={this.register}>Register</button> 
-                </a>
+                {/* </a> */}
             </div> 
       )
     }

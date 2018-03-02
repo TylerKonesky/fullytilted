@@ -94,7 +94,8 @@ app.get('/checkuser', (req, res) => {
         }
    })
 
-app.get('/getId', (req, res) =>{
+app.get('/getid', (req, res) =>{
+    console.log("check getId", req.user.account_id, req.user.summoner_name)
     res.status(200).send({account_id : req.user.account_id, summoner_name: req.user.summoner_name})
 })
 

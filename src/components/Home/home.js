@@ -106,7 +106,6 @@ closeModal() {
 
 componentDidMount(){
      axios.get('/getfriends').then(response=>{
-        console.log('Test Response',response)
         this.setState({
             friends : response.data
         })
@@ -115,7 +114,7 @@ componentDidMount(){
 
 async matches(){
     let matches = [];
-    let account = await axios.get('/getId')
+    let account = await axios.get('/getid')
     console.log("check", account)
     let accountId = account.data.account_id;
         axios.get(`https://na1.api.riotgames.com/lol/match/v3/matchlists/by-account/${accountId}?api_key=${process.env.REACT_APP_API_KEY}`).then(response =>{
@@ -305,7 +304,7 @@ onToken = token => {
                     {friends}
                 </div>
                 :
-                <img src="https://media.giphy.com/media/3o7aDcjrXva7DqzZni/giphy.gif" />
+                <img className="image" src="https://media.giphy.com/media/l2SpY4SJZy8b3BMHK/giphy.gif" width="200" height="200"  />
 
                 
                     
@@ -319,7 +318,7 @@ onToken = token => {
 }
 
 function mapStateToProps(state){
-    console.log("test", state)
+    
     return {
         
         userData: state.user
