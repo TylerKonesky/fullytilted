@@ -9,12 +9,7 @@ const initialState = {
     preferredRole: '',
     summoner_id: '', 
     account_id: '',
-    
-    
-
 }
-
-console.log(initialState.user);
 
 const GET_USER = 'GET_USER';
 const GET_FIRST_NAME = 'GET_FIRST_NAME';
@@ -41,14 +36,11 @@ export default function reducer(state = initialState, action){
             return Object.assign({}, state, {preferredRole: action.payload})
         case GET_ID + '_FULFILLED':
             return Object.assign({}, state, {summoner_id: action.payload.summonerId, account_id: action.payload.accountId})
-        // case GET_ACCOUNT_ID + '_FULFILLED':
-        //     return Object.assign({}, state, {account_id: action.payload})
         case GET_AUTH_ID + '_FULFILLED':
             return Object.assign({}, state, {auth_id: action.payload})
         default: 
             return state; 
     }
-    
 }
 
 export function getUser(){
@@ -81,7 +73,6 @@ export function getEmail(email){
     }
 }
 export function getSummonerName(summonerName){
-    
     return {
         type: GET_SUMMONER_NAME,
         payload: summonerName
@@ -102,10 +93,4 @@ export function getId(state){
         axios.put('/register', Object.assign({}, state, {summonerId : response.data.id}, {accountId: response.data.accountId} ))
         return response.data
     })
-    // return{
-       
-    //     type: GET_ID,
-    //     payload: {summoner_id : response.data.summonerId, account_id : response.data.accountId}
-    // }
-    
 }

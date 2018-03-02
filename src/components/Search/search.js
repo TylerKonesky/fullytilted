@@ -22,45 +22,37 @@ export default class Search extends Component {
         
     }
 
-    enterUser(value){
-        this.setState({
-            summonerInput : value
-        })
-    }
+enterUser(value){
+    this.setState({
+        summonerInput : value
+     })
+}
 
-    searchUser(){
-        
-        axios.get(`https://na1.api.riotgames.com/lol/summoner/v3/summoners/by-name/${this.state.summonerInput}?api_key=${process.env.REACT_APP_API_KEY}`).then(response =>{
-            if(!response){
-                
-                this.setState({
-                     
-                })
-            }else{
-                this.setState({
-                    summoner: response.data.name,
-                    level: response.data.summonerLevel,
-                    accountId: response.data.accountId
-                    
-                })      
-                    
-            } console.log('test', this.state.accountId);
-        }).catch( (err)=> {
-            console.log(err)
+searchUser(){    
+    axios.get(`https://na1.api.riotgames.com/lol/summoner/v3/summoners/by-name/${this.state.summonerInput}?api_key=${process.env.REACT_APP_API_KEY}`).then(response =>{
+        if(!response){    
+            this.setState({         
+            })
+        }else{
             this.setState({
-                summoner: "USER NOT FOUND",
+                summoner: response.data.name,
+                level: response.data.summonerLevel,
+                accountId: response.data.accountId       
+            })              
+        } console.log('test', this.state.accountId);
+    }).catch( (err)=> {
+        console.log(err)
+        this.setState({
+            summoner: "USER NOT FOUND",
             })
         })
     }
 
-    addFriend(){
-        axios.post('/addfriend', {summoner_name: this.state.summoner, accountId: this.state.accountId}).then(response => {
-            console.log("test" , response)
-            
+addFriend(){
+    axios.post('/addfriend', {summoner_name: this.state.summoner, accountId: this.state.accountId}).then(response => {
+        console.log("test" , response)    
         })
     }
-
-    
 
     render() {
         return (

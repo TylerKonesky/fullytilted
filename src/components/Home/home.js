@@ -54,22 +54,17 @@ enterUser(value){
 }
 
 searchUser(){
-
     axios.get(`https://na1.api.riotgames.com/lol/summoner/v3/summoners/by-name/${this.state.summonerInput}?api_key=${process.env.REACT_APP_API_KEY}`).then(response =>{
         if(!response){
-            
-            this.setState({
-                 
+            this.setState({    
             })
         }else{
             this.setState({
                 summoner: response.data.name,
                 level: response.data.summonerLevel,
                 accountId: response.data.accountId
-                
-            })      
-                
-        } console.log('test', this.state.accountId);
+            })           
+        }
     }).catch( (err)=> {
         console.log(err)
         this.setState({
@@ -79,11 +74,20 @@ searchUser(){
 }
 
 addFriend(){
+    if(axios.get('/checkfriends').then(response=>{
+        console.log(response.data)
+        for(let i = 0; i<response.data.length; i++){
+            if(response.data[i].leaguefriends === this.state.summonerInput){
+                alert(`${this.state.summonerInput} is already your friend!`)
+            }
+            
+        }
+    }))
     axios.post('/addfriend', {summoner_name: this.state.summoner, accountId: this.state.accountId}).then(response => {
         axios.get('/getfriends').then(response=>{
             this.setState({
                 friends : response.data
-            })  
+            }, alert("Friend Added!"))  
         })
     })
 }
@@ -115,9 +119,7 @@ componentDidMount(){
 async matches(){
     let matches = [];
     let account = await axios.get('/getid')
-    console.log("check", account)
     let accountId = account.data.account_id;
-    // https://na1.api.riotgames.com/lol/match/v3/matchlists/by-account/${accountId}?api_key=${process.env.REACT_APP_API_KEY}
         axios.get(`/getmatches`).then(response =>{
         console.log('MATCHES', response)    
             for(let i = 0; i < 20; i++){
@@ -138,13 +140,11 @@ async friendsStats(id){
     let kills = 0;
     let assists = 0;
     let deaths = 0;
-    //https://na1.api.riotgames.com/lol/match/v3/matchlists/by-account/${id}?api_key=${process.env.REACT_APP_API_KEY}
     await axios.get(`/friendmatches/` + id).then( async response=>{
         console.log('friendmatches', response)
         for(let i = 0; i < 20; i++){
             let gameId = response.data.matches[i].gameId;
-            //https://na1.api.riotgames.com/lol/match/v3/matches/${response.data.matches[i].gameId}?api_key=${process.env.REACT_APP_API_KEY}
-           await axios.get(`/friendstats/`+ gameId).then(response=>{
+            await axios.get(`/friendstats/`+ gameId).then(response=>{
                console.log("friendstats", response)
                 for(let j = 0; j < 10; j++){
                     if(response.data.participantIdentities[j].player.accountId == accountId){
@@ -153,19 +153,15 @@ async friendsStats(id){
                         deaths = deaths + response.data.participants[j].stats.deaths;
                 }} 
         })
-        }
+    }
         axios.put('/updatefriend', {accountId: id, kills : kills, deaths : deaths, assists : assists}).then(response=>{
             console.log("check friends", response)
             this.setState({
                 friends : response.data
             })
         })
-        
-        //  this.setState({
-        //     friendsStats: Object.assign([], ...this.state.friendsStats, {account_id: id, kills: kills, assists : assists, deaths: deaths})
-        })   
+    })   
 }
-
 
 removeFriend(id){
     axios.delete(`/remove/` + id).then(response => {
@@ -187,20 +183,16 @@ userStats(){
     if(this.state.matches.length){       
         for(let i = 0; i < 20; i++){
             let matches = this.state.matches[i];
-            // https://na1.api.riotgames.com/lol/match/v3/matches/${this.state.matches[i]}?api_key=${process.env.REACT_APP_API_KEY}
             axios.get(`/usermatches/`+ matches).then(response =>{
                 let accountId = this.state.account_id;
                 for(let j = 0; j < 10; j++){
                     if(response.data.participantIdentities[j].player.accountId == accountId){
                         kills += response.data.participants[j].stats.kills;
                         assists += response.data.participants[j].stats.assists;
-                        deaths += response.data.participants[j].stats.deaths;
-                        // damageDealt.push(response.data.participants[j].stats.totalDamageDealtToChampions);
-                        // damageTaken.push(response.data.participants[j].stats.totalDamageTaken);   
+                        deaths += response.data.participants[j].stats.deaths;  
                     }
                 }
 
-                
                 this.setState({
                     kills: kills,
                     deaths: deaths,
@@ -222,8 +214,6 @@ onToken = token => {
 }
     render() {
         let friends = this.state.friends.map((friend)=>{
-            console.log("testtttt",friend)
-
             return( 
                 <FlipMove duration={750} easing="ease-out">
                     <div className ="friend_stats" key ={friend.id} style={{backgroundColor:  ((friend.kills+friend.assists)/friend.deaths) > ((this.state.kills + this.state.assists)/this.state.deaths) ? '#258039' : '#CF3721' }} >    
@@ -240,33 +230,27 @@ onToken = token => {
                 </FlipMove>
             )
         })
-        const {userData} = this.props
-        const customStyles = {
-            content : {
-              top                   : 'auto',
-              left                  : 'auto',
-              right                 : 'auto',
-              bottom                : 'auto',
-             
+const {userData} = this.props
+const customStyles = {
+        content : {
+          top                   : 'auto',
+          left                  : 'auto',
+          right                 : 'auto',
+          bottom                : 'auto',         
             }
           };
         return (
         <div>
             <div className="home_header">
             <div>
-                    {/* <StripeCheckout
-                        
-                        token={this.onToken}
-                        stripeKey={process.env.REACT_APP_STRIPE_PUBLIC_KEY}
-                        amount={this.state.amount}/> */}
-                        <Payment/>
+                <Payment/>
 
-                    <a href="javascript:location.reload(true)">
+                <a href="javascript:location.reload(true)">
                     <button> Refresh Stats </button>
-                    </a>
+                </a>
 
-                
-                    <button onClick={this.openModal}>Find Friends</button>
+                <button onClick={this.openModal}>Find Friends</button>
+
                 <Modal
                     className="modal_box"
                     isOpen={this.state.modalIsOpen}
@@ -275,7 +259,6 @@ onToken = token => {
                     style={customStyles}
                     contentLabel="Friend Search"
         >   
-
                     <h2 ref={subtitle => this.subtitle = subtitle}></h2>
                     <button onClick={this.closeModal}>close</button>
                     <div className="search_box">
@@ -285,16 +268,10 @@ onToken = token => {
                     </div>
             
                 </Modal>
-                
-            
-
-                {/* <a href="http://localhost:3000/#/search">
-                <button> Find Friends </button>
-                </a> */}
-                    
-                <a href={process.env.REACT_APP_LOGOUT}> 
-                   <button>LOGOUT</button> 
-                </a>
+                   
+                    <a href={process.env.REACT_APP_LOGOUT}> 
+                        <button>LOGOUT</button> 
+                    </a>
                 </div>
             </div>
             <div className='stats_page'>
@@ -304,20 +281,11 @@ onToken = token => {
                     <h3>Kills - {this.state.kills} </h3>
                     <h3>Assists - {this.state.assists} </h3>
                     <h3>Deaths  - {this.state.deaths} </h3>
-                    {/* <h3>Total Damage Dealt {this.state.damageDealt.reduce((a,c)=> a + c)} </h3>
-                    <h3>Total Damage Taken {this.state.damageTaken.reduce((a,c)=> a + c)} </h3>
-                    <h3>Damage Per Kill {(this.state.damageDealt.reduce((a,c)=> a + c))/(this.state.kills.reduce((a,c)=> a + c))} </h3>
-                    <h3>Damage Taken Per Death {(this.state.damageTaken.reduce((a,c)=> a + c))/(this.state.deaths.reduce((a,c)=> a + c))} </h3> */}
                     <h3>KDA Ratio {((this.state.kills+this.state.assists)/this.state.deaths).toFixed(2)} </h3>
                     {friends}
                 </div>
                 :
-                <img className="image" src="https://media.giphy.com/media/l2SpY4SJZy8b3BMHK/giphy.gif" width="200" height="200"  />
-
-                
-                    
-                   
-
+                <img className="image" src="https://media.giphy.com/media/l2SpY4SJZy8b3BMHK/giphy.gif" width="200" height="200" />
                 }   
             </div> 
         </div>    
@@ -326,9 +294,7 @@ onToken = token => {
 }
 
 function mapStateToProps(state){
-    
-    return {
-        
+    return {    
         userData: state.user
     }
 }

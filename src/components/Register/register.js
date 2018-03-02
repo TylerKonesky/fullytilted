@@ -3,7 +3,6 @@ import axios from 'axios';
 import {connect} from 'react-redux';
 import './register.css'
 import {getUser, getFirst, getLast, getEmail, getSummonerName, getPreferredRole, getId} from '../../ducks/reducer';
-//const {userData, getFirst, getLast, getEmail, getSummonerName, getPreferredRole, getId} = this.props
 
 class Register extends Component {
     constructor(){
@@ -17,12 +16,11 @@ class Register extends Component {
             summonerName: '',
             auth_id: ''
         }
-        this.register = this.register.bind(this);
+            this.register = this.register.bind(this);
     }
 
     componentDidMount(){
-        this.props.getUser();
-                 
+        this.props.getUser();            
     }
 
     componentWillReceiveProps(nextProps){
@@ -36,9 +34,7 @@ class Register extends Component {
     register(){
         console.log("register",this.state);
         getId(this.state);
-        
-        setTimeout(this.props.history.push('/home'), 1500)
-        
+        setTimeout(this.props.history.push('/home'), 1500)    
     }
     
     newGetFirst(value){
@@ -81,10 +77,6 @@ class Register extends Component {
         console.log("new check", this.state)
         return (
             <div className='register_page'>
-                
-                {/* <h3> {userData.auth_id ? userData.auth_id : null} </h3> */}
-             
-
                 <h3>First Name:   <input onChange={(e)=>this.newGetFirst(e.target.value)}></input> </h3>
                 <h3>Last Name:   <input onChange={(e)=>this.newGetLast(e.target.value)}></input> </h3>
                 <h3>Email:   <input onChange={(e)=>this.newGetEmail(e.target.value)}></input> </h3>
@@ -99,7 +91,6 @@ class Register extends Component {
                 </h3>
                 <h3>Summoner Name:   <input onChange={(e)=>this.newGetSummonerName(e.target.value)}></input> </h3>        
                 {/* <a href={process.env.REACT_APP_LOGIN_HOME}>  */}
-                  
                    <button onClick={this.register}>Register</button> 
                 {/* </a> */}
             </div> 

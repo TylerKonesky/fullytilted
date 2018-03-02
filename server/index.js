@@ -24,9 +24,6 @@ const  {
 const app = express();
 
 app.use(express.static(__dirname + "/../build"));
-// app.get('*', (req, res)=>{
-//     res.sendFile(path.join(__dirname, '../build/index.html'));
-// });
 
 app.use(cors());
 
@@ -64,11 +61,9 @@ passport.use(new Auth0Strategy({
             })
         }
     })
-
 }))
 
 passport.serializeUser( (id, done)=> {
-    
     done(null, id);
 })
 
@@ -76,8 +71,7 @@ passport.deserializeUser( (id, done) =>{
     const db = app.get('db');
     console.log(id)
     db.find_logged_in_user([id]).then( response => {
-        done(null, response[0])
-        
+        done(null, response[0])  
     })
 })
 
@@ -144,6 +138,13 @@ app.put('/register', (req, res)=> {
     db.update_user([firstName, lastName, summonerName, email, preferredRole, summonerId, accountId, auth_id ])
     .then(response => {
         res.status(200).send(console.log('update successful'))
+    })
+})
+
+app.get('/checkfriends', (req, res)=>{
+    const db = app.get('db');
+    db.friend_check([req.user.id]).then(response =>{
+        res.status(200).send(response)
     })
 })
 
