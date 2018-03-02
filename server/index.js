@@ -7,6 +7,7 @@ const passport = require('passport');
 const Auth0Strategy = require('passport-auth0');
 const massive = require('massive');
 const stripe = require('stripe')(process.env.STRIPE_PRIVATE_KEY);
+const axios = require('axios')
 
 
 const  {
@@ -97,6 +98,30 @@ app.get('/checkuser', (req, res) => {
 app.get('/getid', (req, res) =>{
     console.log("check getId", req.user.account_id, req.user.summoner_name)
     res.status(200).send({account_id : req.user.account_id, summoner_name: req.user.summoner_name})
+})
+
+app.get('/getmatches', (req, res)=>{
+    axios.get(`https://na1.api.riotgames.com/lol/match/v3/matchlists/by-account/${req.user.account_id}?api_key=${process.env.API_KEY}`).then(response=>{
+        res.status(200).send(response.data)
+    })
+})
+
+app.get(`/friendmatches/:id`, (req, res)=>{
+    axios.get(`https://na1.api.riotgames.com/lol/match/v3/matchlists/by-account/${req.params.id}?api_key=${process.env.REACT_APP_API_KEY}`).then(response=>{
+        res.status(200).send(response.data)
+    })
+})
+
+app.get(`/friendstats/:gameId`,(req,res)=>{
+    axios.get(`https://na1.api.riotgames.com/lol/match/v3/matches/${req.params.gameId}?api_key=${process.env.REACT_APP_API_KEY}`).then(response=>{
+        res.status(200).send(response.data)
+    })
+})
+
+app.get(`/usermatches/:matches`, (req, res)=>{
+    axios.get(`https://na1.api.riotgames.com/lol/match/v3/matches/${req.params.matches}?api_key=${process.env.REACT_APP_API_KEY}`).then(response =>{
+        res.status(200).send(response.data)
+    })
 })
 
 app.get('/auth/me', (req, res) => {

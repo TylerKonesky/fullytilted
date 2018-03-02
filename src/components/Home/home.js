@@ -117,7 +117,8 @@ async matches(){
     let account = await axios.get('/getid')
     console.log("check", account)
     let accountId = account.data.account_id;
-        axios.get(`https://na1.api.riotgames.com/lol/match/v3/matchlists/by-account/${accountId}?api_key=${process.env.REACT_APP_API_KEY}`).then(response =>{
+    // https://na1.api.riotgames.com/lol/match/v3/matchlists/by-account/${accountId}?api_key=${process.env.REACT_APP_API_KEY}
+        axios.get(`/getmatches`).then(response =>{
         console.log('MATCHES', response)    
             for(let i = 0; i < 20; i++){
                 matches.push(response.data.matches[i].gameId)
@@ -137,9 +138,14 @@ async friendsStats(id){
     let kills = 0;
     let assists = 0;
     let deaths = 0;
-    await axios.get(`https://na1.api.riotgames.com/lol/match/v3/matchlists/by-account/${id}?api_key=${process.env.REACT_APP_API_KEY}`).then( async response=>{
+    //https://na1.api.riotgames.com/lol/match/v3/matchlists/by-account/${id}?api_key=${process.env.REACT_APP_API_KEY}
+    await axios.get(`/friendmatches/` + id).then( async response=>{
+        console.log('friendmatches', response)
         for(let i = 0; i < 20; i++){
-           await axios.get(`https://na1.api.riotgames.com/lol/match/v3/matches/${response.data.matches[i].gameId}?api_key=${process.env.REACT_APP_API_KEY}`).then(response=>{
+            let gameId = response.data.matches[i].gameId;
+            //https://na1.api.riotgames.com/lol/match/v3/matches/${response.data.matches[i].gameId}?api_key=${process.env.REACT_APP_API_KEY}
+           await axios.get(`/friendstats/`+ gameId).then(response=>{
+               console.log("friendstats", response)
                 for(let j = 0; j < 10; j++){
                     if(response.data.participantIdentities[j].player.accountId == accountId){
                         kills = kills + response.data.participants[j].stats.kills;
@@ -180,7 +186,9 @@ userStats(){
     
     if(this.state.matches.length){       
         for(let i = 0; i < 20; i++){
-            axios.get(`https://na1.api.riotgames.com/lol/match/v3/matches/${this.state.matches[i]}?api_key=${process.env.REACT_APP_API_KEY}`).then(response =>{
+            let matches = this.state.matches[i];
+            // https://na1.api.riotgames.com/lol/match/v3/matches/${this.state.matches[i]}?api_key=${process.env.REACT_APP_API_KEY}
+            axios.get(`/usermatches/`+ matches).then(response =>{
                 let accountId = this.state.account_id;
                 for(let j = 0; j < 10; j++){
                     if(response.data.participantIdentities[j].player.accountId == accountId){
