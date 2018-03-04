@@ -184,8 +184,11 @@ userStats(){
     if(this.state.matches.length){       
         for(let i = 0; i < 20; i++){
             let matches = this.state.matches[i];
+            console.log("user matches",matches)
             axios.get(`/usermatches/`+ matches).then(response =>{
                 let accountId = this.state.account_id;
+                console.log("user account id", this.state.account_id)
+                console.log("user info", this.state)
                 for(let j = 0; j < 10; j++){
                     if(response.data.participantIdentities[j].player.accountId == accountId){
                         kills += response.data.participants[j].stats.kills;
