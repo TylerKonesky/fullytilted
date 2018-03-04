@@ -120,6 +120,7 @@ componentDidMount(){
 async matches(){
     let matches = [];
     let account = await axios.get('/getid')
+    console.log("check id", account)
     let accountId = account.data.account_id;
         axios.get(`/getmatches/` + accountId).then(response =>{
         console.log('MATCHES', response)    
