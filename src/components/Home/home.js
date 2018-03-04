@@ -110,6 +110,7 @@ closeModal() {
 
 componentDidMount(){
      axios.get('/getfriends').then(response=>{
+         console.log("getfriends", response)
         this.setState({
             friends : response.data
         })
@@ -214,8 +215,9 @@ onToken = token => {
 }
     render() {
         let friends = this.state.friends.map((friend)=>{
+            console.log("friend check", this.state.friends)
             return( 
-                <FlipMove duration={750} easing="ease-out">
+                <FlipMove duration={500} easing="ease-out">
                     <div className ="friend_stats" key ={friend.id} style={{backgroundColor:  ((friend.kills+friend.assists)/friend.deaths) > ((this.state.kills + this.state.assists)/this.state.deaths) ? '#258039' : '#CF3721' }} >    
                         <span>{friend.summoner_name}</span> 
                         <span>Kills: {friend.kills} </span> 
