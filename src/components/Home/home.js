@@ -121,7 +121,7 @@ async matches(){
     let matches = [];
     let account = await axios.get('/getid')
     let accountId = account.data.account_id;
-        axios.get(`/getmatches`).then(response =>{
+        axios.get(`/getmatches/` + accountId).then(response =>{
         console.log('MATCHES', response)    
             for(let i = 0; i < 20; i++){
                 matches.push(response.data.matches[i].gameId)
