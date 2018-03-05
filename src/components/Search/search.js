@@ -29,7 +29,8 @@ enterUser(value){
 }
 
 searchUser(){    
-    axios.get(`https://na1.api.riotgames.com/lol/summoner/v3/summoners/by-name/${this.state.summonerInput}?api_key=${process.env.REACT_APP_API_KEY}`).then(response =>{
+    //https://na1.api.riotgames.com/lol/summoner/v3/summoners/by-name/${this.state.summonerInput}?api_key=${process.env.REACT_APP_API_KEY}
+    axios.get(`/searchfriends/` + this.state.summonerInput).then(response =>{
         if(!response){    
             this.setState({         
             })

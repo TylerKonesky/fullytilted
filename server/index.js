@@ -94,7 +94,12 @@ app.get('/getid', (req, res) =>{
     res.status(200).send({account_id : req.user.account_id, summoner_name: req.user.summoner_name})
 })
 
+app.get('/searchfriends/:summoner', (req, res)=>{
+    axios.get(`https://na1.api.riotgames.com/lol/summoner/v3/summoners/by-name/${req.params.summoner}?api_key=${process.env.API_KEY}`)
+})
+
 app.get('/getmatches/:account_id', (req, res)=>{
+
     axios.get(`https://na1.api.riotgames.com/lol/match/v3/matchlists/by-account/${req.params.account_id}?api_key=${process.env.API_KEY}`).then(response=>{
         res.status(200).send(response.data)
     })
