@@ -6,6 +6,7 @@ import Register from './components/Register/register';
 import Home from "./components/Home/home";
 import Search from "./components/Search/search";
 import Riot from "./components/Riot/riot"
+import path from "path";
 
 
 
