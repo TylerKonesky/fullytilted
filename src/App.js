@@ -5,6 +5,7 @@ import Auth from "./components/Auth/auth";
 import Register from './components/Register/register';
 import Home from "./components/Home/home";
 import Search from "./components/Search/search";
+import Riot from "./components/Riot/riot"
 
 
 
@@ -19,6 +20,8 @@ class App extends Component {
             <Route path="/register" component={Register}/>
             <Route path="/home" component={Home}/>
             <Route path='/search' component={Search}/>
+            <Route path='/riot.txt' component={Riot}/>
+            
           </Switch>
         </HashRouter>
         
