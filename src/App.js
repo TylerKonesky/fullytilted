@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
-import {HashRouter, Route, Switch} from 'react-router-dom';
+import {BrowserRouter, Route, Switch} from 'react-router-dom';
 import Auth from "./components/Auth/auth";
 import Register from './components/Register/register';
 import Home from "./components/Home/home";
@@ -14,7 +14,7 @@ class App extends Component {
     return (
       <div className="App">
         
-        <HashRouter>
+        <BrowserRouter>
           <Switch>
             <Route exact path="/" component={Auth}/>
             <Route path="/register" component={Register}/>
@@ -23,7 +23,7 @@ class App extends Component {
             <Route path='/riot.txt' component={Riot}/>
             
           </Switch>
-        </HashRouter>
+        </BrowserRouter>
         
       </div>
     );
