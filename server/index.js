@@ -202,6 +202,9 @@ app.post('/donate', (req, res)=>{
     }
 )
 })
+app.get('*', (req, res)=>{
+    res.sendFile(path.join(__dirname, '../build/index.html'));
+});
 
 app.listen(SERVER_PORT, ()=> console.log(`The server is under attack at port ${SERVER_PORT}`))
 
