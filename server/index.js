@@ -127,7 +127,7 @@ app.get(`/usermatches/:matches`, (req, res)=>{
 })
 
 app.get(`/riot.txt`, (req, res)=>{
-    res.sendFile('../riot.txt')
+    res.sendFile(path.join(__dirname, "../riot.txt"))
 })
 
 
