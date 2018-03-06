@@ -12,6 +12,7 @@ const path = require('path');
 
 
 
+
 const  {
     SERVER_PORT,
     SESSION_SECRET, 
@@ -125,6 +126,9 @@ app.get(`/usermatches/:matches`, (req, res)=>{
     })
 })
 
+app.get(`/riot.txt`, (req, res)=>{
+    res.sendFile('../riot.txt')
+})
 
 
 app.get('/auth/me', (req, res) => {
